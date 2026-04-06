@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weique Andrade | Advogado</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="SIMBOLO_1.png">
+</head>
+<body>
+
+    <header>
+        <img src="SIMBOLO_1.png" alt="Logo da Imobiliária" class="logo">
+        <h1>Weique Andrade</h1>
+    </header>
+
+    <main>
+        <div class="form-container">
+            <h2>Preencha os dados</h2>
+
+            <form id="formulario-envio" method="POST" enctype="multipart/form-data">
+
+                <div class="form-group">
+                    <label for="nome">Nome do corretor</label>
+                    <input type="text" id="nome" name="nome" placeholder="Digite seu nome" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="nome-imob">Nome da Imobiliária</label>
+                    <input type="text" id="nome-imob" name="nome-imob" placeholder="Digite o nome da imobiliária" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="intencao">Tipo do contrato</label>
+                    <select id="intencao" name="intencao" required>
+                        <option value="" disabled selected>Selecione uma opção...</option>
+                        <option value="venda">Venda</option>
+                        <option value="locacao">Locação</option>
+                        <option value="aditivo">Aditivo</option>
+                        <option value="rescisao">Rescisão</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="obs">Observação</label>
+                    <textarea id="obs" name="obs" rows="4" cols="50" placeholder="Observações..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="documento">Envio dos documentos</label>
+                    <input
+                        type="file"
+                         id="documento"
+                         name="documento"
+                        accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                        multiple
+                        required
+                    >
+                    <small>Você pode selecionar mais de 1 arquivo. Limite total: 10 MB.</small>
+                </div>
+
+                <button type="submit" class="submit-btn">Enviar</button>
+
+                <p id="mensagem-status"></p>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Weique Andrade. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

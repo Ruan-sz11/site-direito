@@ -1,0 +1,171 @@
+        :root {
+            --verde-escuro: #00353A;
+            --verde-medio: #06464C;
+            --creme: #F2D3BC;
+            --dourado-escuro: #9E744D;
+            --dourado-claro: #CBA98C;
+            --gradient-dourado: linear-gradient(135deg, var(--dourado-escuro), var(--dourado-claro));
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--verde-escuro);
+            color: var(--creme);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        header {
+            background-color: var(--verde-medio);
+            padding: 1rem 5%;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            width: 80px;
+            height: auto;
+            margin-right: 20px;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            background: var(--gradient-dourado);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .form-container {
+            background-color: var(--creme);
+            color: var(--verde-escuro);
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .form-container h2 {
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 1.5rem;
+            color: var(--verde-escuro);
+            border-bottom: 2px solid var(--dourado-escuro);
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--verde-medio);
+        }
+
+        select, input[type="file"], input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+            background-color: #fff;
+            color: var(--verde-escuro);
+            transition: border-color 0.3s ease;
+        }
+
+        select:focus, input[type="file"]:focus, input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: var(--dourado-escuro);
+            box-shadow: 0 0 5px rgba(158, 116, 77, 0.5);
+        }
+
+        input[type="file"] {
+            padding: 8px;
+            background-color: #f9f9f9;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--gradient-dourado);
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: opacity 0.3s ease, transform 0.1s ease;
+            margin-top: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        .submit-btn:hover {
+            opacity: 0.9;
+        }
+
+        .submit-btn:active {
+            transform: translateY(2px);
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            background-color: var(--verde-medio);
+            font-size: 0.9rem;
+            color: var(--dourado-claro);
+        }
+
+        @media (max-width: 480px) {
+            .form-container {
+                padding: 1.5rem;
+            }
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .logo {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+        }
+
+        #mensagem-status {
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+            min-height: 24px;
+        }
+
+        #mensagem-status.sucesso {
+            color: green;
+        }
+
+        #mensagem-status.erro {
+            color: red;
+        }
