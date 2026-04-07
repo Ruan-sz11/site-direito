@@ -3,7 +3,7 @@ const mensagemStatus = document.getElementById("mensagem-status");
 const campoArquivos = document.getElementById("documento");
 
 // URL do backend
-const API_URL = "https://site-direito.onrender.com/enviar";
+const API_URL = "https://api.weiqueandrade.adv.br/enviar";
 
 // Limite total de 10 MB
 const LIMITE_TOTAL_BYTES = 10 * 1024 * 1024;

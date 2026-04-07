@@ -11,6 +11,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// 🔒 CORS restrito ao seu domínio
 app.use(cors({
   origin: [
     "https://weiqueandrade.adv.br",
@@ -18,41 +19,40 @@ app.use(cors({
   ],
   methods: ["POST"],
 }));
+
 app.use(express.json());
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Cria a pasta uploads se não existir
+// 📁 Cria pasta uploads se não existir
 if (!fs.existsSync("uploads")) {
     fs.mkdirSync("uploads");
 }
 
-// Extensões permitidas
+// 📎 Extensões permitidas
 const extensoesPermitidas = [".pdf", ".jpg", ".jpeg", ".png", ".doc", ".docx"];
 
-// Limite total de 10 MB
+// 📏 Limite total 10MB
 const LIMITE_TOTAL_BYTES = 10 * 1024 * 1024;
 
-// Configuração do multer
+// 📤 Configuração do multer
 const upload = multer({
     dest: "uploads/",
     limits: {
-        // Limite individual alto o suficiente para permitir vários arquivos,
-        // enquanto o controle real do total será feito manualmente abaixo.
         fileSize: 10 * 1024 * 1024
     },
     fileFilter: (req, file, cb) => {
         const extensao = path.extname(file.originalname).toLowerCase();
 
         if (!extensoesPermitidas.includes(extensao)) {
-            return cb(new Error("Tipo de arquivo não permitido. Envie PDF, JPG, JPEG, PNG, DOC ou DOCX."));
+            return cb(new Error("Tipo de arquivo não permitido."));
         }
 
         cb(null, true);
     }
 });
 
-// Função para apagar arquivos temporários
+// 🧹 Remove arquivos temporários
 function removerArquivosTemporarios(arquivos) {
     if (!arquivos || !Array.isArray(arquivos)) return;
 
@@ -63,67 +63,85 @@ function removerArquivosTemporarios(arquivos) {
     }
 }
 
-// Rota de teste
+// 🔐 Função para evitar HTML malicioso
+function escaparHTML(texto) {
+    return texto
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+}
+
+// 🌐 Rota teste
 app.get("/", (req, res) => {
     res.send("Backend funcionando");
 });
 
-// Rota para receber o formulário com vários arquivos
+// 📩 Rota principal
 app.post("/enviar", upload.array("documento", 10), async (req, res) => {
     const { nome, "nome-imob": nomeImob, intencao, obs } = req.body;
-
-    // Agora req.files é um array
     const arquivos = req.files || [];
 
     try {
-        // Validação dos campos
+        // ❌ validação básica
         if (!nome || !nomeImob || !intencao) {
             removerArquivosTemporarios(arquivos);
-
-            return res.status(400).json({
-                mensagem: "Preencha todos os campos obrigatórios."
-            });
+            return res.status(400).json({ mensagem: "Preencha os campos obrigatórios." });
         }
 
-        // Valida se pelo menos 1 arquivo foi enviado
         if (arquivos.length === 0) {
-            return res.status(400).json({
-                mensagem: "Envie pelo menos um documento."
-            });
+            return res.status(400).json({ mensagem: "Envie pelo menos um arquivo." });
         }
 
-        // Soma o tamanho total dos arquivos
+        // 📏 soma tamanho total
         let tamanhoTotal = 0;
         for (const arquivo of arquivos) {
             tamanhoTotal += arquivo.size;
         }
 
-        // Bloqueia se o total ultrapassar 10 MB
         if (tamanhoTotal > LIMITE_TOTAL_BYTES) {
             removerArquivosTemporarios(arquivos);
-
             return res.status(400).json({
-                mensagem: "O tamanho total dos arquivos não pode ultrapassar 10 MB."
+                mensagem: "Arquivos ultrapassam 10MB."
             });
         }
 
-        // Prepara anexos para o Resend
+        // 🔐 sanitização
+        const nomeSeguro = escaparHTML(nome);
+        const nomeImobSeguro = escaparHTML(nomeImob);
+        const intencaoSeguro = escaparHTML(intencao);
+
+        // 📝 observação com quebra de linha preservada
+        let obsFormatada = "Não informada";
+
+        if (obs && obs.trim() !== "") {
+            const obsSegura = escaparHTML(obs);
+            obsFormatada = obsSegura.replace(/\n/g, "<br>");
+        }
+
+        // 📎 anexos
         const anexos = arquivos.map((arquivo) => {
-            const arquivoBuffer = fs.readFileSync(arquivo.path);
+            const buffer = fs.readFileSync(arquivo.path);
 
             return {
                 filename: arquivo.originalname,
-                content: arquivoBuffer
+                content: buffer
             };
         });
 
+        // 📧 HTML do email (melhorado)
         const htmlEmail = `
             <div style="font-family: Arial, sans-serif; line-height: 1.6;">
                 <h2>Novo envio de contrato</h2>
-                <p><strong>Nome do corretor:</strong> ${nome}</p>
-                <p><strong>Nome da Imobiliária:</strong> ${nomeImob}</p>
-                <p><strong>Tipo do contrato:</strong> ${intencao}</p>
-                <p><strong>Observação:</strong> ${obs || "Não informada"}</p>
+
+                <p><strong>Nome do corretor:</strong> ${nomeSeguro}</p>
+                <p><strong>Nome da Imobiliária:</strong> ${nomeImobSeguro}</p>
+                <p><strong>Tipo do contrato:</strong> ${intencaoSeguro}</p>
+
+                <p><strong>Observação:</strong></p>
+                <div style="background:#f5f5f5;padding:10px;border-radius:6px;">
+                    ${obsFormatada}
+                </div>
+
                 <p><strong>Quantidade de arquivos:</strong> ${arquivos.length}</p>
             </div>
         `;
@@ -131,35 +149,34 @@ app.post("/enviar", upload.array("documento", 10), async (req, res) => {
         await resend.emails.send({
             from: process.env.EMAIL_REMETENTE,
             to: process.env.EMAIL_DESTINO,
-            subject: `Novo contrato enviado - ${nomeImob}`,
+            subject: `Novo contrato enviado - ${nomeImobSeguro}`,
             html: htmlEmail,
             attachments: anexos
         });
 
-        // Remove arquivos temporários após envio
         removerArquivosTemporarios(arquivos);
 
         return res.status(200).json({
             mensagem: "Formulário enviado com sucesso."
         });
+
     } catch (erro) {
         removerArquivosTemporarios(arquivos);
-
-        console.error("Erro no servidor:", erro);
+        console.error("Erro:", erro);
 
         return res.status(500).json({
-            mensagem: "Erro interno ao enviar o formulário."
+            mensagem: "Erro interno no servidor."
         });
     }
 });
 
-// Middleware global de erro
+// 🚨 tratamento de erro global
 app.use((erro, req, res, next) => {
     console.error("Erro capturado:", erro);
 
     if (erro instanceof multer.MulterError) {
         return res.status(400).json({
-            mensagem: "Erro no upload dos arquivos."
+            mensagem: "Erro no upload."
         });
     }
 
