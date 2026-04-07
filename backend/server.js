@@ -11,7 +11,13 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    "https://weiqueandrade.adv.br",
+    "https://www.weiqueandrade.adv.br"
+  ],
+  methods: ["POST"],
+}));
 app.use(express.json());
 
 const resend = new Resend(process.env.RESEND_API_KEY);
