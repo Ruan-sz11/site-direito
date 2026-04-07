@@ -111,9 +111,10 @@ app.post("/enviar", upload.array("documento", 10), async (req, res) => {
         const intencaoSeguro = escaparHTML(intencao);
 
         // 📝 observação com quebra de linha preservada
-       let obsSegura = "";
-       if (obs && obs.trim() !== "") {
-            obsSegura = escaparHTML(obs);
+        let obsFormatada = "Não informada";
+        if (obs && obs.trim() !== "") {
+            const obsSegura = escaparHTML(obs);
+            obsFormatada = obsSegura.replace(/\n/g, "<br>");
         }
         // 📎 anexos
         const anexos = arquivos.map((arquivo) => {
@@ -136,7 +137,7 @@ app.post("/enviar", upload.array("documento", 10), async (req, res) => {
 
                 <p><strong>Observação:</strong></p>
                 <div style="background:#f5f5f5;padding:10px;border-radius:6px;white-space: pre-wrap;font-family: Arial, sans-serif;">
-                    ${obsSegura || "Não informada"}
+                    ${obsFormatada}
                 </div>
 
                 <p><strong>Quantidade de arquivos:</strong> ${arquivos.length}</p>
