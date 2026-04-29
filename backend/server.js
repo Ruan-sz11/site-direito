@@ -173,7 +173,7 @@ app.post("/enviar", upload.array("documento", 10), async (req, res) => {
         await resend.emails.send({
             from: process.env.EMAIL_REMETENTE,
             to: process.env.EMAIL_DESTINO,
-            subject: `Novo contrato enviado - ${nomeImobSeguro} - ${nomeSeguro}`,
+            subject: `📄 ${intencaoSeguro} - ${nomeSeguro} | ${nomeImobSeguro}`,
             html: htmlEmail,
             attachments: anexos
         });
