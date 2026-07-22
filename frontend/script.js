@@ -87,6 +87,12 @@ formulario.addEventListener("submit", async (event) => {
         return;
     }
 
+    if (arquivosSelecionados.length === 0) {
+    mensagemStatus.textContent = "Selecione um ou mais arquivos.";
+    mensagemStatus.className = "erro";
+    return;
+}
+   
     // Cria o FormData com todos os campos do formulário
     const formData = new FormData();
 
