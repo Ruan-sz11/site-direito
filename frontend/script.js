@@ -1,11 +1,10 @@
 const formulario = document.getElementById("formulario-envio");
 const mensagemStatus = document.getElementById("mensagem-status");
 const campoArquivos = document.getElementById("documento");
-const inputArquivos = document.getElementById("arquivo");
 
 let arquivosSelecionados = [];
 
-inputArquivos.addEventListener("change", (e) => {
+campoArquivos.addEventListener("change", (e) => {
 
     const novosArquivos = Array.from(e.target.files);
 
@@ -25,7 +24,7 @@ inputArquivos.addEventListener("change", (e) => {
 
     atualizarListaArquivos();
 
-    inputArquivos.value = "";
+    campoArquivos.value = "";
 });
 
 function atualizarListaArquivos() {
